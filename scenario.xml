@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="scenario.xsd">
+    <brokers>
+        <broker id="b1">
+            <!-- compose-specific DNS, can use any MQTT broker -->
+            <address>hivemq</address>
+            <port>1883</port>
+        </broker>
+    </brokers>
+    <clientGroups>
+        <clientGroup id="trucks">
+            <clientIdPattern>trucks-[0-9]{5}</clientIdPattern>
+            <count>100</count>
+        </clientGroup>
+    </clientGroups>
+    <topicGroups>
+        <topicGroup id="t1">
+            <topicNamePattern>vehicles/trucks/truck-[0-9]{5}/location</topicNamePattern>
+            <count>100</count>
+        </topicGroup>
+    </topicGroups>
+    <stages>
+        <stage id="s1">
+            <lifeCycle id="l1" clientGroup="trucks">
+                <rampUp duration="5s"/>
+                <connect/>
+                <publish topicGroup="t1"
+                         count="2000000"
+                         rate="1/1s"
+                         message="/config.json"
+                         payloadGeneratorType="com.hivemq.generator.RoutePayloadGenerator"
+                         roundRobin="false"/>
+            </lifeCycle>
+        </stage>
+    </stages>
+</scenario>

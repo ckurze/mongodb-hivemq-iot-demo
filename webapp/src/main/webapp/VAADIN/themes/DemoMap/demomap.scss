@@ -1,0 +1,22 @@
+@import "../valo/valo.scss";
+
+$fade-duration: 0.5s;
+
+@mixin demomap {
+	@include valo;
+
+	/* Add your theme selectors here */
+	.leaflet-marker-pane {
+      -webkit-transition: translate .3s linear;
+      -moz-transition: translate .3s linear;
+      -o-transition: translate .3s linear;
+      -ms-transition: translate .3s linear;
+      transition: translate .3s linear;
+    }
+
+    .circle-transition:hover {
+        fill: red;
+        fill-opacity: 1;
+        transition: all 1s
+    }
+}

@@ -1,0 +1,67 @@
+version: "2.4"
+services:
+  hivemq:
+    image: hivemq/hivemq-ce:latest
+    # image: hivemq/hivemq4:latest
+    mem_limit: 800M
+    mem_reservation: 800M
+    ports:
+    - 1883:1883
+    - 8081:8080
+    environment:
+      JAVA_OPTS: "-XX:+UnlockExperimentalVMOptions -XX:InitialRAMPercentage=30 -XX:MaxRAMPercentage=80 -XX:MinRAMPercentage=30"
+    # Wait until HiveMQ is completely started
+    healthcheck:
+      test: ["CMD", "echo", "\"\"", ">", "/dev/tcp/127.0.0.1/1883"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  webapp:
+    image: sbaier1/car-demo-webapp
+    mem_limit: 800M
+    mem_reservation: 800M
+    depends_on:
+      hivemq:
+        condition: service_healthy
+    ports:
+    - 8080:8080
+    environment:
+      UPDATE_RATE: 500
+      BROKER: hivemq
+      TOPIC: vehicles/trucks/+/location
+      BOUND_SW_LON: 5.205146
+      BOUND_SW_LAT: 47.543008
+      BOUND_NE_LON: 14.427292
+      BOUND_NE_LAT: 53.958021
+  devsim:
+    depends_on:
+      hivemq:
+        condition: service_healthy
+    image: sbaier1/device-simulator:develop
+    mem_limit: 1500M
+    mem_reservation: 1500M
+    environment:
+      JAVA_TOOL_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:InitialRAMPercentage=30 -XX:MaxRAMPercentage=80 -XX:MinRAMPercentage=30 -XX:MaxDirectMemorySize=500M"
+      LOG_LEVEL: INFO
+      # Configure as single node device simulator:
+      SIMULATOR_COMMANDER_AGENTS: "127.0.0.1:9000"
+      SIMULATOR_AGENT_BIND_ADDRESS: "0.0.0.0"
+      SIMULATOR_AGENT_BIND_PORT: 9000
+      SIMULATOR_SCENARIO_PATH: "/scenario.xml"
+      # Currently baked into the image, could also be a volume mount on the base image instead.
+      SIMULATOR_PLUGIN_PATH: "/plugins"
+      OSM_FILE: "/map.osm.pbf"
+      CONFIG_FILE "/config.json"
+    volumes:
+      # Actual load scenario
+      - ${PWD}/scenario.xml:/scenario.xml
+      # Configuration for the payload generation (time speedup, warehouse locations file path)
+      - ${PWD}/geo-payloads/config.json:/config.json
+      # Plugin implementation jar (implies gradle shadowJar was executed)
+      - ${PWD}/geo-payloads/build/libs:/plugins
+      # OSM data (implies download, see README)
+      - ${PWD}/geo-payloads/germany-latest.osm.pbf:/map.osm.pbf
+      # Warehouses to use
+      - ${PWD}/warehouses_de.geojson:/warehouses_de.geojson
+      # For graph hopper indexing persistence
+      - /tmp/graphhopper:/tmp/graphhopper

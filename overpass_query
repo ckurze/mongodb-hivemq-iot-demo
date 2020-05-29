@@ -1,0 +1,25 @@
+# Alle (auto befahrbaren) Straßen in bounding box
+(
+  way({{bbox}})[highway][highway!~"path|track|cycleway|footway|pedestrian"];
+);
+(._;>;);
+out meta;
+
+
+
+# Autobahnen in bounding box
+(
+  way({{bbox}})[highway][highway=motorway"];
+);
+(._;>;);
+out meta;
+
+
+# All warehouses in germany (see warehouses_de.geojson)
+
+[timeout:1000];
+{{geocodeArea:Germany}}->.searchArea;
+(
+  way(area.searchArea)[building][building=warehouse];
+);
+out center;

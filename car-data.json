@@ -1,0 +1,41 @@
+{
+  "description": "Models the fictional data format for the truck telemetry",
+  "type": "object",
+  "properties": {
+    "location": {
+      "type": "object",
+      "properties": {
+        "lat": {
+          "type": "number"
+        },
+        "lon": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "lat",
+        "lon"
+      ]
+    },
+    "routeId": {
+      "type": "string"
+    },
+    "speed": {
+      "type": "number"
+    },
+    "speedLimit": {
+      "type": "number"
+    },
+    "break": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "location",
+    "routeId",
+    "speed",
+    "speedLimit",
+    "break"
+  ]
+}

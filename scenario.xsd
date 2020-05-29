@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        elementFormDefault="qualified">
+
+    <!--Commands-->
+
+    <xs:element name="disconnect" type="disconnectCommand"/>
+
+    <xs:element name="connect" type="connectCommand"/>
+
+    <xs:element name="for" type="forCommand"/>
+
+    <xs:element name="publish" type="publishCommand"/>
+
+    <xs:element name="subscribe" type="subscribeCommand"/>
+
+    <xs:element name="unsubscribe" type="unsubscribeCommand"/>
+
+    <xs:element name="wait" type="waitCommand"/>
+
+    <xs:element name="rampUp" type="rampUpCommand"/>
+
+
+    <!-- Other Properties-->
+
+    <xs:element name="broker" type="broker"/>
+
+    <xs:element name="clientGroup" type="clientGroup"/>
+
+    <xs:element name="lifeCycle" type="lifeCycle"/>
+
+    <xs:element name="scenario" type="scenario"/>
+
+    <xs:element name="stage" type="stage"/>
+
+    <xs:element name="topicGroup" type="topicGroup"/>
+
+    <xs:element name="subscription" type="subscription"/>
+
+    <xs:complexType name="scenario">
+        <xs:sequence>
+            <xs:element name="brokers">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element ref="broker" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+
+            <xs:element name="clientGroups">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element ref="clientGroup" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+
+            <xs:element name="topicGroups" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element ref="topicGroup" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+
+            <xs:element name="subscriptions" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element ref="subscription" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+
+            <xs:element name="stages">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element ref="stage" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+
+    <xs:complexType name="broker">
+        <xs:sequence>
+            <xs:element name="address" type="xs:string"/>
+            <xs:element name="port" type="xs:positiveInteger"/>
+            <xs:element name="transport" default="TCP" minOccurs="0">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="TCP"/>
+                        <xs:enumeration value="TLS"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:ID" use="required"/>
+    </xs:complexType>
+
+
+    <xs:complexType name="clientGroup">
+        <xs:choice>
+            <xs:sequence>
+                <xs:element name="clientIdPattern" type="xs:string"/>
+                <xs:element name="count" type="xs:positiveInteger"/>
+                <xs:element name="mqttVersion" type="mqttVersion" minOccurs="0" default="5"/>
+            </xs:sequence>
+            <xs:sequence>
+                <xs:element name="count" type="xs:positiveInteger"/>
+                <xs:element name="mqttVersion" type="mqttVersion" minOccurs="0" default="5"/>
+            </xs:sequence>
+        </xs:choice>
+        <xs:attribute name="id" type="xs:ID" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="topicGroup">
+        <xs:sequence>
+            <xs:element name="topicNamePattern" type="xs:string"/>
+            <xs:element name="count" type="xs:positiveInteger"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:ID" use="required"/>
+    </xs:complexType>
+
+
+    <xs:complexType name="subscription">
+        <xs:choice>
+            <xs:sequence>
+                <xs:element name="topicGroup" type="xs:IDREF"/>
+                <xs:element name="wildCard" type="xs:boolean" minOccurs="0" default="false"/>
+            </xs:sequence>
+            <xs:sequence>
+                <xs:element name="topicFilter" type="xs:string"/>
+            </xs:sequence>
+        </xs:choice>
+        <xs:attribute name="id" type="xs:ID" use="required"/>
+    </xs:complexType>
+
+
+    <xs:complexType name="stage">
+        <xs:sequence>
+            <xs:element ref="lifeCycle" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:ID" use="required"/>
+        <xs:attribute name="expectedDuration" type="time"/>
+    </xs:complexType>
+
+
+    <xs:complexType name="lifeCycle">
+        <xs:sequence>
+            <xs:choice maxOccurs="unbounded">
+                <xs:element ref="connect"/>
+                <xs:element ref="disconnect"/>
+                <xs:element ref="publish"/>
+                <xs:element ref="subscribe"/>
+                <xs:element ref="unsubscribe"/>
+                <xs:element ref="wait"/>
+                <xs:element ref="for"/>
+                <xs:element ref="rampUp"/>
+            </xs:choice>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:ID" use="required"/>
+        <xs:attribute name="clientGroup" type="xs:IDREF" use="required"/>
+        <xs:attribute name="expectedDuration" type="time"/>
+    </xs:complexType>
+
+
+    <!-- Commands -->
+    <xs:complexType name="command" abstract="true">
+    </xs:complexType>
+
+    <xs:complexType name="reportableCommand" abstract="true">
+        <xs:complexContent>
+            <xs:extension base="command">
+                <xs:attribute name="expectedDuration" type="time"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+
+    <xs:complexType name="connectCommand">
+        <xs:complexContent>
+            <xs:extension base="reportableCommand">
+                <xs:attribute name="broker" type="xs:IDREFS"/>
+                <xs:attribute name="retries" type="xs:nonNegativeInteger" default="0"/>
+                <xs:attribute name="retryInterval" type="time" default="5s"/>
+                <xs:attribute name="timeOut" type="time" default="60s"/>
+                <xs:attribute name="keepAlive" type="time" default="60s"/>
+                <xs:attribute name="credentials" type="xs:string"/>
+                <xs:attribute name="cleanStart" type="xs:boolean" default="true"/>
+                <xs:attribute name="sessionExpiry" type="time" default="0s"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+
+    <xs:complexType name="disconnectCommand">
+        <xs:complexContent>
+            <xs:extension base="reportableCommand"/>
+        </xs:complexContent>
+    </xs:complexType>
+
+
+    <xs:complexType name="publishCommand">
+        <xs:complexContent>
+            <xs:extension base="reportableCommand">
+                <xs:attribute name="topicGroup" type="xs:IDREF" use="required"/>
+                <xs:attribute name="message" type="xs:string" use="required"/>
+                <xs:attribute name="payloadGeneratorType" type="xs:string" default="static"/>
+                <xs:attribute name="rate" type="rate"/>
+                <xs:attribute name="qos" type="qos" default="0"/>
+                <xs:attribute name="count" type="xs:positiveInteger" default="1"/>
+                <xs:attribute name="waitForAck" type="xs:boolean" default="false"/>
+                <xs:attribute name="retain" type="xs:boolean" default="false"/>
+                <xs:attribute name="roundRobin" type="xs:boolean" default="true"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+
+    <xs:complexType name="subscribeCommand">
+        <xs:complexContent>
+            <xs:extension base="reportableCommand">
+                <xs:attribute name="to" type="xs:IDREFS" use="required"/>
+                <xs:attribute name="qos" type="qos" default="2"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+
+    <xs:complexType name="unsubscribeCommand">
+        <xs:complexContent>
+            <xs:extension base="reportableCommand">
+                <xs:attribute name="from" type="xs:IDREFS" use="required"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+
+    <xs:complexType name="waitCommand">
+        <xs:complexContent>
+            <xs:extension base="reportableCommand">
+                <xs:attribute name="duration" type="time"/>
+                <xs:attribute name="for" type="xs:IDREF"/>
+                <xs:attribute name="messagePattern" type="xs:string"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+
+    <xs:complexType name="forCommand">
+        <xs:complexContent>
+            <xs:extension base="reportableCommand">
+                <xs:sequence>
+                    <xs:choice minOccurs="0" maxOccurs="unbounded">
+                        <xs:element ref="connect"/>
+                        <xs:element ref="disconnect"/>
+                        <xs:element ref="publish"/>
+                        <xs:element ref="subscribe"/>
+                        <xs:element ref="unsubscribe"/>
+                        <xs:element ref="wait"/>
+                        <xs:element ref="for"/>
+                        <xs:element ref="rampUp"/>
+                    </xs:choice>
+                </xs:sequence>
+                <xs:attribute name="times" type="xs:positiveInteger" default="1"/>
+                <xs:attribute name="rate" type="rate"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+
+    <xs:complexType name="rampUpCommand">
+        <xs:complexContent>
+            <xs:extension base="command">
+                <xs:attribute name="duration" type="time" use="required"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+
+    <!-- Defined Types -->
+    <xs:simpleType name="rate">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[1-9]([0-9])*/[1-9]([0-9])*(ms|s|m|h|d)"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+
+    <xs:simpleType name="time">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[0-9]+(ms|s|m|h|d)"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+
+    <xs:simpleType name="qos">
+        <xs:restriction base="xs:int">
+            <xs:enumeration value="0"/>
+            <xs:enumeration value="1"/>
+            <xs:enumeration value="2"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="mqttVersion">
+        <xs:restriction base="xs:int">
+            <xs:enumeration value="3"/>
+            <xs:enumeration value="5"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>

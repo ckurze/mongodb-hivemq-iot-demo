@@ -1,0 +1,14 @@
+{
+  "description": "Route based payload generator configuration",
+  "type": "object",
+  "properties": {
+    "locationFile": {
+      "type": "string"
+    },
+    "timeMultiplier":{
+      "type": "number",
+      "default": 1,
+      "description": "This factor determines how much the traversal time for a plotted route will be sped up (or slowed down). 1 is realtime."
+    }
+  }
+}
