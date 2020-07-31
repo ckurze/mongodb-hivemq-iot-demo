@@ -1,6 +1,13 @@
 # HiveMQ & MongoDB Fleet Management Demo
 
-This demo intents to show how HiveMQ can MongoDB can interact with each other. The combination of both solves the typical IoT challenges:
+This is the repository referenced in the webinar about "Building a scalable and reliable IoT platform with MongoDB and HiveMQ" that I did together with Dominik Obermaier from HiveMQ. Please find additional information here:
+
+* [Slides on SlideShare](https://www.slideshare.net/ChristianKurze01/building-a-scalable-and-reliable-iot-platform-with-hivemq-and-mongodb)
+* [Recap of the Webinar on LinkedIn Pulse](https://www.linkedin.com/pulse/recap-webinar-building-reliable-scalable-iot-platform-kurze/?articleId=6672172140642484224)
+* [Guest post HiveMQ Blog](https://www.hivemq.com/blog/building-a-reliable-and-scalable-iot-platform/)
+* [Recording of the Webinar](https://www.mongodb.com/presentations/building-a-scalable-and-reliable-iot-platform-with-mongodb-and-hivemq)
+
+The fleet management demo intents to show how HiveMQ can MongoDB can interact with each other. The combination of both solves the typical IoT challenges:
 
 * **Many different types of data need to be integrated.** Device data arrives in various formats (JSON, Avro, Protobuf, custom binary formats). In most cases, we talk about time series data. Data agnostic message brokers are used to distribute data into the backend of IoT solutions and relational databases that are often not suited for IoT data.
 * **Systems have to be responsive.** Low latency is critical for many, if not all, IoT use cases. End users simply expect responsive systems. Users do not want to wait for 30 seconds or minutes for an IoT system to respond when their messaging services can send text, voice, and images around the globe within seconds. Unreliable cellular networks can have a significant impact on responsiveness. A very good example is the HiveMQ case study with BMW / ShareNow on how to gather data and execute remote commands for a carsharing fleet.
