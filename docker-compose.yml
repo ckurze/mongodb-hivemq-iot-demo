@@ -51,7 +51,7 @@ services:
       # Currently baked into the image, could also be a volume mount on the base image instead.
       SIMULATOR_PLUGIN_PATH: "/plugins"
       OSM_FILE: "/map.osm.pbf"
-      CONFIG_FILE "/config.json"
+      CONFIG_FILE: "/config.json"
     volumes:
       # Actual load scenario
       - ${PWD}/scenario.xml:/scenario.xml
@@ -60,7 +60,7 @@ services:
       # Plugin implementation jar (implies gradle shadowJar was executed)
       - ${PWD}/geo-payloads/build/libs:/plugins
       # OSM data (implies download, see README)
-      - ${PWD}/geo-payloads/germany-latest.osm.pbf:/map.osm.pbf
+      - ${PWD}/germany-latest.osm.pbf:/map.osm.pbf
       # Warehouses to use
       - ${PWD}/warehouses_de.geojson:/warehouses_de.geojson
       # For graph hopper indexing persistence

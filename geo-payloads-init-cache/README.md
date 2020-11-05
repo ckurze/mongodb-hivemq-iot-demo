@@ -4,7 +4,7 @@ This project enables you to pre-load the indexes of Graphhopper from a non-conta
 
 ## Preparation
 
-### Download OSM data
+### If not done already: Download OSM data
 
 This only needs to be done once, so if you already downloaded the file to a different directory, you can simply reference to it later on.
 

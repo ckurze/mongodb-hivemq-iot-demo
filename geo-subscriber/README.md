@@ -16,7 +16,14 @@ Environment variables:
 
 ## Startup
 
-`python geo-subscriber.py`
+```basch
+# Set the environment variables: 
+export MQTT_HOST="localhost"
+export MONGO_URI="mongodb://localhost:27017"
+
+# Start the subscriber:
+python geo-subscriber.py
+```
 
 TOOD: Containerize
 

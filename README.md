@@ -19,6 +19,11 @@ The fleet management demo intents to show how HiveMQ can MongoDB can interact wi
 
 Credits to Simon Bayer @sbaier1 from HiveMQ for the generator.
 
+## TODO
+
+* Containerize dashboard app and add to docker-compose
+* Containerize MQTT subscriber and add to docker-compose
+
 ## Demo Overview
 
 We selected fleet management for our example because it is a very broad use case. We talk about trucks, but it can be any kind of fleet - vehicles, forklifts, trains, goods, and so on. Literally, anything that forms a fleet and needs to be monitored and managed.
@@ -42,7 +47,7 @@ Summary of the used tools:
 ## Requirements
 
 - Docker
-- Java 11
+- Java 11 (had some issues testing in Java 15)
 - Python
 - MongoDB Atlas Account
 
@@ -58,6 +63,10 @@ Please see the respective module README files for further details.
 ## Setup
 
 The following steps are necessary:
+- Download OpenStreetMap data into the root directory of this repo
+  ```bash
+  curl -OL https://download.geofabrik.de/europe/germany-latest.osm.pbf
+  ```
 - [Build the Generator](geo-payloads/README.md)
 - [Preload the index files for the payload generator](geo-payloads-init-cache/README.md)
 - [Python dependencies for the dashboard](geo-analytical-app/README.md)
@@ -77,11 +86,13 @@ To do so, go to the Docker preferences -> Advanced and adjust the CPU / Memory p
 
 If you run into CPU bottlenecks, try adjusting either the client count parameter or the update rate.
 
-We provide a docker compose file that allows running all application components.
-
-```
-docker-compose up
-```
+* Start the simulator and MQTT broker:
+  ```
+  docker-compose up
+  ```
+* Start the [MQTT Subscriber](geo-subscriber/README.md) to start writing to MongoDB
+* Start the [Dashboard Application](geo-analytical-app/README.md) to analyze the data
+* Open the dashboard in your browser: `http://127.0.0.1:8050/`
 
 ## Generating location data
 

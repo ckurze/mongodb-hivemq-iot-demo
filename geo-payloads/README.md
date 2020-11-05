@@ -2,15 +2,18 @@
 
 ## Preparation
 
-### Download OSM data
+## Build
 
 ```bash
-wget https://download.geofabrik.de/europe/germany-latest.osm.pbf
+# make sure you are in the geo-payloads directory
+./gradlew shadowJar
 ```
 
-## Build & Run
+## Init the Cache
 
-NOTE: You should run the `InitMain` class locally from your IDE first to initialize the Graphhopper index files. It may take very long in VM-encapsulated containers. As an alternative, use the `geo-payloads-init-cache` project if you need to execute the cache initialization in a remote environment.
+**NOTE:** You should run the `InitMain` class locally from your IDE first to initialize the Graphhopper index files. It may take very long in VM-encapsulated containers. As an alternative, use the [geo-payloads-init-cache](../geo-payloads-init-cache/README.md) project if you need to execute the cache initialization in a remote environment.
+
+## Optional: Run in standalone mode
 
 ```bash
 ./gradlew shadowJar
@@ -28,7 +31,7 @@ docker run --rm --name device-simulator \
   -v $(pwd)/../scenario.xml:/scenario.xml \
   -v $(pwd)/../warehouses_de.geojson:/warehouses_de.geojson \
   -v /tmp/graphhopper:/tmp/graphhopper \
-  -v $(pwd)/germany-latest.osm.pbf:/map.osm.pbf \
+  -v $(pwd)/../germany-latest.osm.pbf:/map.osm.pbf \
   -v $(pwd)/build/libs:/plugins \
   -v $(pwd)/config.json:/config.json \
     sbaier1/device-simulator:develop

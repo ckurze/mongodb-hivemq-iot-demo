@@ -20,7 +20,14 @@ Import the warehouses into MongoDB:
 
 ## Startup
 
-`python app.py`
+```bash
+# Set the environment variables: 
+export MQTT_HOST="localhost"
+export MONGO_URI="mongodb://localhost:27017"
+
+# Start the app:
+python app.py
+```
 
 TOOD: Containerize
 
